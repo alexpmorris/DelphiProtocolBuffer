@@ -1201,7 +1201,7 @@ begin
       Result:=Result+
         '    property '+FMembers[i].Name+': '+FMembers[i].PascalType+
         ' read F'+FMembers[i].Name;
-      if FMembers[i].Quant=Quant_Optional then
+      if (FMembers[i].Quant=Quant_Optional) or (FMembers[i].Quant=Quant_Required) then
         Result:=Result+' write F'+FMembers[i].Name;
       Result:=Result+';'#13#10;
      end
