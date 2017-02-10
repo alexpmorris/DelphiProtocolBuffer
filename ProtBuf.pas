@@ -136,7 +136,7 @@ begin
   raise Exception.Create('Error writing to stream');
 end;
 
-procedure _WriteVarInt(Stream: TStream; x: cardinal); overload;
+{procedure _WriteVarInt(Stream: TStream; x: cardinal); overload;
 var
   i:cardinal;
   b:byte;
@@ -164,6 +164,34 @@ begin
     b:=(x shr i) and $7F;
     if Stream.Write(b,1)<>1 then _WriteError;
    end;
+end;}
+
+//the above _WriteVarInt functions return invalid results, replaced with these below:
+
+procedure _WriteVarInt(Stream: TStream; value: cardinal); overload;
+var
+  b: shortint;
+begin
+  repeat
+    b := value and $7F;
+    value := value shr 7;
+    if value <> 0 then
+      b := b + $80;
+    if (Stream.Write(b,1)<>1) then _WriteError;
+  until value = 0;
+end;
+
+procedure _WriteVarInt(Stream: TStream; value: int64); overload;
+var
+  b: shortint;
+begin
+  repeat
+    b := value and $7F;
+    value := value shr 7;
+    if value <> 0 then
+      b := b + $80;
+    if (Stream.Write(b,1)<>1) then _WriteError;
+  until value = 0;
 end;
 
 procedure TProtocolBufferMessage.LoadFromStream(Stream: TStream;
