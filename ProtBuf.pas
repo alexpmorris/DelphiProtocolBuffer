@@ -95,7 +95,7 @@ begin
   raise Exception.Create('Error reading from stream');
 end;
 
-function _ReadVarInt(Stream: TStream; var Value: cardinal): boolean; overload;
+{function _ReadVarInt(Stream: TStream; var Value: cardinal): boolean; overload;
 var
   b:byte;
   i,l:integer;
@@ -129,6 +129,48 @@ begin
     Value:=Value or ((b and $7F) shl i);
    end;
   Result:=l<>0;
+end;}
+
+//the above _ReadVarInt functions return invalid results, replaced with these below:
+
+function _ReadVarInt(Stream: TStream; var Value: cardinal): boolean; overload;
+var tmp: shortint;
+    shift: integer;
+    l: integer;
+begin
+  result := false;
+  shift := -7;
+  Value := 0;
+  repeat
+    Inc(shift, 7);
+    // for negative numbers number value may be to 10 byte
+    if (shift >= 64) then exit;
+    l := Stream.Read(tmp,1);
+    if (l = 0) then exit;
+    Value := Value or ((tmp and $7F) shl shift);
+  until (tmp >= 0);
+  result := true;
+end;
+
+function _ReadVarInt(Stream: TStream; var Value: int64): boolean; overload;
+var tmp: shortint;
+    l,shift: integer;
+    i64: int64;
+begin
+  result := false;
+  shift := -7;
+  Value := 0;
+  repeat
+    Inc(shift, 7);
+    // for negative numbers number value may be to 10 byte
+    if (shift >= 64) then exit;
+    l := Stream.Read(tmp,1);
+    if (l = 0) then exit;
+    i64 := tmp and $7F;
+    i64 := i64 shl shift;
+    Value := Value or i64;
+  until (tmp >= 0);
+  result := true;
 end;
 
 procedure _WriteError; //virtual? keep Stream reference?
