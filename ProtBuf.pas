@@ -69,6 +69,8 @@ type
       Value: TProtocolBufferMessage);
     procedure WriteBlock(Stream: TStream; Key: TProtocolBufferKey;
       var Data; Length: cardinal);
+    procedure WriteBytes(Stream: TStream; Key: TProtocolBufferKey;
+      var Value: TDynArrayOfBytes);
 
   public
     constructor Create;
@@ -451,6 +453,17 @@ begin
   if l<>0 then
     if cardinal(Stream.Read(Value[0],l))<>l then _ReadError;
   FDidRead:=true;
+end;
+
+procedure TProtocolBufferMessage.WriteBytes(Stream: TStream;
+  Key: TProtocolBufferKey; var Value: TDynArrayOfBytes);
+var l: cardinal;
+begin
+  _WriteVarInt(Stream,(Key shl 3) or 2);
+  l := Length(Value);
+  _WriteVarInt(Stream,l);
+  if l<>0 then
+    if cardinal(Stream.Write(Value[0],l))<>l then _WriteError;
 end;
 
 procedure TProtocolBufferMessage.ReadStr(Stream: TStream; var Value: string);
