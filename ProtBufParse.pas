@@ -1090,7 +1090,7 @@ begin
       TypeNr_float:   FMembers[i].PascalType:='single';
       TypeNr_double:  FMembers[i].PascalType:='double';
       TypeNr_bool:    FMembers[i].PascalType:='boolean';
-      TypeNr_bytes:   FMembers[i].PascalType:='array of byte';//TBytes?
+      TypeNr_bytes:   FMembers[i].PascalType:='TDynArrayOfBytes';//TBytes?
       //TypeNr_enum:
       //TypeNr_msg:
       TypeNr__typeByName:
@@ -1402,7 +1402,7 @@ begin
             '      begin'#13#10+
             '        l := Length(F'+FMembers[i].Name+');'#13#10+
             '        SetLength(F'+FMembers[i].Name+', l+1);'#13#10+
-            '        ReadBlock(Stream, F'+FMembers[i].Name+', 4);'#13#10+
+            '        ReadBlock(Stream, F'+FMembers[i].Name+'[l], 4);'#13#10+
             '      end;'#13#10;
     Result:=Result+'  end;'#13#10'end;'#13#10#13#10;
    end;
@@ -1424,7 +1424,7 @@ begin
             '      begin'#13#10+
             '        l := Length(F'+FMembers[i].Name+');'#13#10+
             '        SetLength(F'+FMembers[i].Name+', l+1);'#13#10+
-            '        ReadBlock(Stream, F'+FMembers[i].Name+', 8);'#13#10+
+            '        ReadBlock(Stream, F'+FMembers[i].Name+'[l], 8);'#13#10+
             '      end;'#13#10;
     Result:=Result+'  end;'#13#10'end;'#13#10#13#10;
    end;
